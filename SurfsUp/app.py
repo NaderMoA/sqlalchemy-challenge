@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 
 
 #################################################
@@ -74,6 +74,26 @@ def tobs():
     for tobs in tobs_list:
         tobs_output.append(tobs.tobs)
     return jsonify(tobs_output)
+
+@app.route("/api/v1.0/<start>")
+def start():
+    # start = input("please enter your start date YYYY-MM-DD: ")
+    if start >= func.min(Measurement.date) & start <= func.max(Measurement.date):
+        start_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
+        .filter(Measurement.date >= start).all()
+        session.close()
+        min_temp, max_temp, avg_temp = start_result[0]
+        start_dict = {}
+        start_dict["Min"] = min_temp
+        start_dict["Max"] = max_temp
+        start_dict["Avg"] = avg_temp
+        
+    else:
+        print("No data found for the specified time period.")
+
+    return jsonify(start_dict)
+
+
 
 
 
