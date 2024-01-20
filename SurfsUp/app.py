@@ -38,8 +38,8 @@ def index():
         f"/api/v1.0/precipitation <br/>"
         f"/api/v1.0/stations <br/>"
         f"/api/v1.0/tobs <br/>"
-        f"/api/v1.0/<start> <br/>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/enter-your-start-date <br/>"
+        f"/api/v1.0/your-start-date/your-end-date"
 
     )
 
@@ -111,5 +111,5 @@ def end(start, end):
     return jsonify(end_list)
 
 
-
-app.run()
+if __name__ == '__main__':
+    app.run(debug=True)
