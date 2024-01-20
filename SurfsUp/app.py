@@ -78,22 +78,35 @@ def tobs():
 @app.route("/api/v1.0/<start>")
 def start(start):
     
-     if start >= min(Measurement.date) & start <= max(Measurement.date):
         start_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
         .filter(Measurement.date >= start).all()
         session.close()
-        min_temp, max_temp, avg_temp = start_result[0]
-        start_dict = {}
-        start_dict["Min"] = min_temp
-        start_dict["Max"] = max_temp
-        start_dict["Avg"] = avg_temp
-        return jsonify(start_dict)
-     else:
-         return print("No data found for the specified time period.")
-
+        start_list = []
+        
+        for min_temp, max_temp, avg_temp in start_result:
+            start_dict = {}
+            start_dict["Min"] = min_temp
+            start_dict["Max"] = max_temp
+            start_dict["Avg"] = avg_temp
+            start_list.append(start_dict)
+        return jsonify(start_list)
     
+    
+@app.route("/api/v1.0/<start>/<end>")
+def end(start, end):
 
-
+    end_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
+    .filter(Measurement.date >= start).filter(Measurement.date <= end).all() 
+    session.close()
+    end_list = []
+        
+    for min_temp, max_temp, avg_temp in end_result:
+            end_dict = {}
+            end_dict["Min"] = min_temp
+            end_dict["Max"] = max_temp
+            end_dict["Avg"] = avg_temp
+            end_list.append(end_dict)
+    return jsonify(end_list)
 
 
 
