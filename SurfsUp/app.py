@@ -76,9 +76,9 @@ def tobs():
     return jsonify(tobs_output)
 
 @app.route("/api/v1.0/<start>")
-def start():
-    # start = input("please enter your start date YYYY-MM-DD: ")
-    if start >= func.min(Measurement.date) & start <= func.max(Measurement.date):
+def start(start):
+    
+     if start >= min(Measurement.date) & start <= max(Measurement.date):
         start_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
         .filter(Measurement.date >= start).all()
         session.close()
@@ -87,11 +87,11 @@ def start():
         start_dict["Min"] = min_temp
         start_dict["Max"] = max_temp
         start_dict["Avg"] = avg_temp
-        
-    else:
-        print("No data found for the specified time period.")
+        return jsonify(start_dict)
+     else:
+         return print("No data found for the specified time period.")
 
-    return jsonify(start_dict)
+    
 
 
 
