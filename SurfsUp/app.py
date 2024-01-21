@@ -51,14 +51,14 @@ def index():
 def precipitation():
     precipitation_result = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date >= "2016_08_23").all()
     session.close()
-    precipitation_output = []
+    # precipitation_output = []
+    prec_dict = {}
     for date, prcp in precipitation_result:
-        prec_dict = {}
-        prec_dict["date"] = prcp
-        precipitation_output.append(prec_dict)
+        prec_dict[date] = prcp
+        # precipitation_output.append(prec_dict)
 
-    return jsonify(precipitation_output)
-
+    # return jsonify(precipitation_output)
+    return jsonify(prec_dict)    
 @app.route("/api/v1.0/stations")
 def station():
     station_list = session.query(Station.name).all()
