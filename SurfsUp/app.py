@@ -4,6 +4,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+import datetime as dt
 
 
 #################################################
@@ -51,14 +52,13 @@ def index():
 def precipitation():
     precipitation_result = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date >= "2016_08_23").all()
     session.close()
-    # precipitation_output = []
+    
     prec_dict = {}
     for date, prcp in precipitation_result:
         prec_dict[date] = prcp
-        # precipitation_output.append(prec_dict)
+    return jsonify(prec_dict) 
 
-    # return jsonify(precipitation_output)
-    return jsonify(prec_dict)    
+
 @app.route("/api/v1.0/stations")
 def station():
     station_list = session.query(Station.name).all()
@@ -67,6 +67,7 @@ def station():
     for station in station_list:
         station_output.append(station.name)
     return jsonify(station_output)
+
 
 @app.route("/api/v1.0/tobs")
 def tobs():
@@ -79,9 +80,10 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def start(start):
-    
+        
+        start_date = dt.datetime.strptime(start, "%Y-%m-%d")
         start_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
-        .filter(Measurement.date >= start).all()
+        .filter(Measurement.date >= start_date).all()
         session.close()
         start_list = []
         
@@ -97,8 +99,10 @@ def start(start):
 @app.route("/api/v1.0/<start>/<end>")
 def end(start, end):
 
+    start_end_date = dt.datetime.strptime(start, "%Y-%m-%d")
+    end_date = dt.datetime.strptime(end, "%Y-%m-%d")
     end_result = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs))\
-    .filter(Measurement.date >= start).filter(Measurement.date <= end).all() 
+    .filter(Measurement.date >= start_end_date).filter(Measurement.date <= end_date).all() 
     session.close()
     end_list = []
         
